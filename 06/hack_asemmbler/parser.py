@@ -13,6 +13,14 @@ class HackParser:
     def __init__(self, filepath):
         self.file = open(filepath)
         self.current_command = None
+
+    #context manager
+    def __enter__(self):
+        print('ENTER!')
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print('EXIT!')
         
     def advance(self):
         while True:

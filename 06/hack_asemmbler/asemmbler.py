@@ -10,7 +10,7 @@ symbol_pattern = re.compile(r'([0-9]+)|([0-9a-zA-Z_\.\$:]+)')
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('asm_file', type=str, help='asm file')
-    args = parser.parse_args
+    args = parser.parse_args()
     asm_file = args.asm_file
     save_file = os.path.splitext(asm_file)[0] + '.hack'
     symbol_table = Symbol_table()
