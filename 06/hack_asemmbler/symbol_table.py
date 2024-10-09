@@ -34,7 +34,7 @@ class Symbol_table:
         self.next_address += 1
 
     def contains(self, symbol):
-        return self.symbol_table.has_key(symbol)
+        return symbol in self.symbol_table
     
     def get_address(self, symbol):
         return self.symbol_table[symbol]

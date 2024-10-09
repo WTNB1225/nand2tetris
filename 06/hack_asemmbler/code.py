@@ -52,10 +52,14 @@ jump_dict = {
 }
 
 def dest(mnemonic):
+    if mnemonic == None:
+        return dest_dict['null']
     return dest_dict[mnemonic]
 
 def comp(mnemonic):
     return comp_dict[mnemonic]
 
 def jump(mnemonic):
+    if mnemonic == None:
+        return jump_dict['null']
     return jump_dict[mnemonic]
