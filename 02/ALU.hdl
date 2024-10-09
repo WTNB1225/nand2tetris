@@ -1,0 +1,65 @@
+// このファイルは www.nand2tetris.org の一部です。
+// また、書籍「The Elements of Computing Systems」
+// （著者：NisanとSchocken、MIT Press）の一部でもあります。
+// ファイル名：projects/02/ALU.hdl
+
+/**
+ * ALU（算術論理ユニット）。
+ * 以下のいずれかの関数を計算します：
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&y, x|y。これらは6つの入力ビット
+ * zx, nx, zy, ny, f, no に基づいて、2つの16ビット入力に対して
+ * 実行されます。
+ * 加えて、ALUは2つの1ビット出力を計算します：
+ * ALU出力が0の場合、zrが1に設定されます。それ以外の場合、zrは0に設定されます。
+ * ALU出力が0未満の場合、ngが1に設定されます。それ以外の場合、ngは0に設定されます。
+ */
+
+// 実装: ALUのロジックは、xとyの入力を操作し、以下のように
+// 結果を処理します：
+
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute out = x + y (if 1) or x & y (if 0)
+        no; // negate the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out < 0),  0 otherwise
+
+    PARTS:
+    // zx == 1 の場合、x = 0 に設定
+    Mux16(a=x, b=false, sel=zx, out=w1);
+    // zy == 1 の場合、y = 0 に設定
+    Mux16(a=y, b=false, sel=zy, out=w2);
+
+    // nx == 1 の場合、x = !x に設定       // ビットごとのNOT
+    Not16(in=w1, out=notw1);
+    Mux16(a=w1, b=notw1, sel=nx, out=w3);
+
+    // ny == 1 の場合、y = !y に設定       // ビットごとのNOT
+    Not16(in=w2, out=notw2);
+    Mux16(a=w2, b=notw2, sel=ny, out=w4);
+
+    // f == 1 の場合、out = x + y に設定    // 2の補数の整数加算
+    And16(a=w3, b=w4, out=w5);
+    Add16(a=w3, b=w4, out=w6);
+    Mux16(a=w5, b=w6, sel=f, out=w7);
+
+    // no == 1 の場合、out = !out に設定    // ビットごとのNOT
+    Not16(in=w7, out=w8);
+    Mux16(a=w7, b=w8, sel=no, out=out, out[0..7]=out0to7, out[8..15]=out8to15, out[15]=ng); // out < 0 の場合、ng = 1 に設定
+
+    // out == 0 の場合、zr = 1 に設定
+    Or8Way(in=out0to7, out=or0to7);
+    Or8Way(in=out8to15, out=or8to15);
+    Or(a=or0to7, b=or8to15, out=or0to16);
+    Not(in=or0to16, out=zr);
+}
