@@ -4,6 +4,12 @@ from constant import *
 class CodeWriter():
     def __init__(self, filepath):
         self.f = open(filepath, 'w')
+        self.write_codes([
+            '@256',
+            'D=A',
+            '@SP',
+            'M=D'
+        ])
         self.label_num = 0
 
     def __enter__(self):
