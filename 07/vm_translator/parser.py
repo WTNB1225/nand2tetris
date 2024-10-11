@@ -1,34 +1,14 @@
-C_ARITHMETIC = 0
-C_PUSH = 1
-C_POP = 2
-C_LABEL = 3
-C_GOTO = 4
-C_IF = 5
-C_FUNCTION = 6
-C_RETURN = 7
-C_CALL = 8
-
+from constant import *
 class Parser:
     def __init__(self, filepath):
         self.file = open(filepath, 'r')
-        self.lines = self.file.readlines()
-        for count, line in enumerate(self.lines):
-            pass
-        self.lines_index = 0
-        self.lines_length = count
         self.current_command = None
     
     def __enter__(self):
-        return
+        return self
     
     def __exit__(self, type, value, traceback):
-        return
-    
-    def has_more_commands(self):
-        if self.lines_index > self.lines_length:
-            return False
-        else:
-            return True
+        self.file.close()
     
     def command_type(self):
         if self.current_command[0] == "push":
@@ -51,8 +31,7 @@ class Parser:
             return C_ARITHMETIC
     
     def advance(self):
-        if self.has_more_command == True:
-            self.lines_index += 1
+        while True:
             line = self.file.readline()
             if not line:
                 self.current_command = None
@@ -71,6 +50,8 @@ class Parser:
         cmd_type = self.command_type()
         if cmd_type == C_ARITHMETIC:
             return self.current_command[0]
+        else: 
+            return self.current_command[1]
     
     def arg2(self):
         cmd_type = self.command_type()
